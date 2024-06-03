@@ -1,0 +1,490 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package TurisGym;
+import java.sql.*;
+import com.microsoft.sqlserver.jdbc.SQLServerDriver;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Vector;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ *
+ * @author turis
+ */
+public class Payments extends javax.swing.JFrame {
+
+    /**
+     * Creates new form Payments
+     */
+    public Payments() {
+        initComponents();
+        Connect();
+        DisplayPayments();
+    }
+         
+    
+    
+    String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    String url = "jdbc:sqlserver://DESKTOP-STANKTQ:1433;databaseName=PROJECT;encrypt=true;trustServerCertificate=true;";
+    String user = "Vlad";
+    String pass = "****";
+    
+    Connection con;
+    PreparedStatement pst;
+
+    public void Connect() {
+        try {
+            Class.forName(driver);
+            con = DriverManager.getConnection(url, user, pass);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
+    
+     private void DisplayPayments() {
+             try {
+        String sql = "SELECT m.FirstName, m.LastName, p.Amount, p.PaymentDate, p.PaymentType, p.Description " +
+                     "FROM Payments p JOIN Members m ON p.MemberID = m.MemberID";
+        pst = con.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+
+        DefaultTableModel model = (DefaultTableModel) TablePayments.getModel();
+        model.setRowCount(0); // Clear existing data
+
+        while (rs.next()) {
+            Vector<Object> row = new Vector<>();
+            row.add(rs.getString("FirstName") + " " + rs.getString("LastName")); // Concatenate first and last name
+            row.add(rs.getBigDecimal("Amount"));
+            Timestamp ts = rs.getTimestamp("PaymentDate");
+            row.add(ts.toString()); // Convert Timestamp to String for display
+            row.add(rs.getString("PaymentType"));
+            row.add(rs.getString("Description"));
+            model.addRow(row);
+        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Error loading payments: " + ex.getMessage());
+    }
+    }
+     
+      private void SearchPayments() {
+         try {
+        String memberName = MNameText.getText().trim();
+        String amount = AmmountText.getText().trim();
+        String paymentType = PaymentText.getText().trim();
+        java.util.Date paymentDate = PaymentDate.getDate();
+        String description = DescriptionText.getText().trim();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        StringBuilder sql = new StringBuilder("SELECT m.FirstName, m.LastName, p.Amount, p.PaymentDate, p.PaymentType, p.Description " +
+                                              "FROM Payments p JOIN Members m ON p.MemberID = m.MemberID WHERE 1=1");
+        if (!memberName.isEmpty()) {
+            sql.append(" AND (m.FirstName + ' ' + m.LastName LIKE '%").append(memberName).append("%')");
+        }
+        if (!amount.isEmpty()) {
+            sql.append(" AND p.Amount = ").append(amount);
+        }
+        if (!paymentType.isEmpty()) {
+            sql.append(" AND p.PaymentType LIKE '%").append(paymentType).append("%'");
+        }
+        if (paymentDate != null) {
+            String formattedDate = dateFormat.format(paymentDate);
+            sql.append(" AND CONVERT(date, p.PaymentDate) = '").append(formattedDate).append("'");
+        }
+        if (!description.isEmpty()) {
+            sql.append(" AND p.Description LIKE '%").append(description).append("%'");
+        }
+
+        pst = con.prepareStatement(sql.toString());
+        ResultSet rs = pst.executeQuery();
+
+        DefaultTableModel model = (DefaultTableModel) TablePayments.getModel();
+        model.setRowCount(0); // Clear existing data
+
+        while (rs.next()) {
+            Vector<Object> row = new Vector<>();
+            row.add(rs.getString("FirstName") + " " + rs.getString("LastName"));
+            row.add(rs.getBigDecimal("Amount"));
+            Timestamp ts = rs.getTimestamp("PaymentDate");
+            row.add(ts.toString()); // This will include the time
+            row.add(rs.getString("PaymentType"));
+            row.add(rs.getString("Description"));
+            model.addRow(row);
+        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Error searching payments: " + ex.getMessage());
+    }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel3 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        MNameText = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        AmmountText = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        PaymentText = new javax.swing.JTextField();
+        PaymentDate = new com.toedter.calendar.JDateChooser();
+        jLabel11 = new javax.swing.JLabel();
+        RefreshBtn = new javax.swing.JButton();
+        Searchbtn = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        TablePayments = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        DescriptionText = new javax.swing.JTextPane();
+        jLabel2 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+
+        jPanel1.setBackground(new java.awt.Color(153, 255, 153));
+
+        jLabel4.setText("Logout");
+        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel4MouseClicked(evt);
+            }
+        });
+
+        jLabel9.setText("Go back");
+        jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel9MouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(67, 67, 67)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(100, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(253, 253, 253)
+                .addComponent(jLabel9)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel4)
+                .addContainerGap(430, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 812, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 28, Short.MAX_VALUE)
+        );
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel1.setText("Payments");
+
+        jLabel6.setText("Member Name");
+
+        MNameText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MNameTextActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText("Amount");
+
+        AmmountText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AmmountTextActionPerformed(evt);
+            }
+        });
+
+        jLabel8.setText("PaymentType");
+
+        PaymentText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PaymentTextActionPerformed(evt);
+            }
+        });
+
+        jLabel11.setText("PaymentDate");
+
+        RefreshBtn.setText("Refresh");
+        RefreshBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                RefreshBtnMouseClicked(evt);
+            }
+        });
+
+        Searchbtn.setText("Search");
+        Searchbtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                SearchbtnMouseClicked(evt);
+            }
+        });
+        Searchbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SearchbtnActionPerformed(evt);
+            }
+        });
+
+        TablePayments.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Member Name", "Ammount", "PaymentDate", "PaymentType", "Description"
+            }
+        ));
+        jScrollPane1.setViewportView(TablePayments);
+
+        jScrollPane2.setViewportView(DescriptionText);
+
+        jLabel2.setText("Description");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 307, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(Searchbtn)
+                        .addGap(45, 45, 45)
+                        .addComponent(RefreshBtn))
+                    .addComponent(jLabel11)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel3Layout.createSequentialGroup()
+                                    .addComponent(jLabel2)
+                                    .addGap(160, 160, 160))
+                                .addGroup(jPanel3Layout.createSequentialGroup()
+                                    .addComponent(MNameText, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(99, 99, 99)))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel7)
+                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(PaymentText, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(AmmountText, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(PaymentDate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE))
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 562, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 353, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(155, 155, 155))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGap(27, 27, 27)
+                            .addComponent(jLabel6)
+                            .addGap(549, 549, Short.MAX_VALUE))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addContainerGap()))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(116, 116, 116)
+                .addComponent(MNameText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(PaymentDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(19, 19, 19)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(AmmountText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel8)
+                        .addGap(12, 12, 12)
+                        .addComponent(PaymentText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE))
+                .addGap(43, 43, 43)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Searchbtn)
+                    .addComponent(RefreshBtn))
+                .addContainerGap(220, Short.MAX_VALUE))
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel1)
+                            .addGap(7, 7, 7)
+                            .addComponent(jLabel6)
+                            .addGap(0, 0, Short.MAX_VALUE)))
+                    .addContainerGap()))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        // TODO add your handling code here:
+        new Login().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jLabel4MouseClicked
+
+    private void MNameTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MNameTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_MNameTextActionPerformed
+
+    private void AmmountTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AmmountTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_AmmountTextActionPerformed
+
+    private void PaymentTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PaymentTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PaymentTextActionPerformed
+
+    private void SearchbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchbtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SearchbtnActionPerformed
+
+    private void SearchbtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SearchbtnMouseClicked
+        // TODO add your handling code here:
+        SearchPayments();
+    }//GEN-LAST:event_SearchbtnMouseClicked
+
+    private void RefreshBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RefreshBtnMouseClicked
+        // TODO add your handling code here:
+        MNameText.setText("");
+        AmmountText.setText("");
+        PaymentText.setText("");
+        PaymentDate.setDate(null);
+        DescriptionText.setText("");
+
+        // Load the initial data
+        DisplayPayments();
+    }//GEN-LAST:event_RefreshBtnMouseClicked
+
+    private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
+        // TODO add your handling code here:
+        this.dispose();
+        new Members().setVisible(true);
+    }//GEN-LAST:event_jLabel9MouseClicked
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Payments.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Payments.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Payments.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Payments.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Payments().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField AmmountText;
+    private javax.swing.JTextPane DescriptionText;
+    private javax.swing.JTextField MNameText;
+    private com.toedter.calendar.JDateChooser PaymentDate;
+    private javax.swing.JTextField PaymentText;
+    private javax.swing.JButton RefreshBtn;
+    private javax.swing.JButton Searchbtn;
+    private javax.swing.JTable TablePayments;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    // End of variables declaration//GEN-END:variables
+}
