@@ -80,6 +80,34 @@ BEGIN
         INNER JOIN dbo.MembershipTypes mt ON i.MembershipTypeID = mt.MembershipTypeID;
         END;
 
+### Memberships Types:
+
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/f3978416-1954-450c-91c0-f712eda7e6df">
+
+### Class Types:
+
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/f04dac2a-61a3-4d20-8b80-e84975f6397f">
+
+### Class :
+
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/1e6abfb7-45e0-4b81-bdc7-ff8e4434b26b">
+
+### Equipament:
+
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/c4088b45-6eee-4989-b434-32e7984d0955">
+
+### Trainers:
+
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/69ff321c-ee41-458e-a539-57eb21c04093">
+
+If you select a trainer and then press on the see members, you will see all the members that have contracts with this trainer.
+The red ones are members with no active subscriptions and the green ones have avalabile training program with the trainer.
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/ac2546f7-5a99-45e9-a4a9-72c885d78c7c">
+
+
+
+
+
 
 
 
