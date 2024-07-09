@@ -105,6 +105,27 @@ The red ones are members with no active subscriptions and the green ones have av
 <img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/ac2546f7-5a99-45e9-a4a9-72c885d78c7c">
 
 
+ALTER TRIGGER [dbo].[trg_InsertPaymentForTraining]
+ON [dbo].[MemberTrainers]
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Insert a payment record for each new member trainer association
+    INSERT INTO dbo.Payments (MemberID, Amount, PaymentDate, PaymentType, Description)
+    SELECT 
+        i.MemberID,
+        DATEDIFF(MONTH, i.StartPeriod, i.EndPeriod) * t.PricePerMonth, -- Calculate total price
+        GETDATE(), -- Use current date as payment date
+        'Training Fee',
+        'Payment for training from ' + CONVERT(VARCHAR, i.StartPeriod, 101) + ' to ' + CONVERT(VARCHAR, i.EndPeriod, 101)
+    FROM 
+        inserted i
+        JOIN dbo.Trainers t ON i.TrainerID = t.TrainerID;
+END;
+
+
 
 
 
