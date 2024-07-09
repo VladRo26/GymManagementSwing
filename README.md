@@ -57,7 +57,7 @@ BEGIN
     FROM Memberships m
     INNER JOIN inserted i ON m.MembershipID = i.MembershipID
     INNER JOIN MembershipTypes mt ON m.MembershipTypeID = mt.MembershipTypeID;
-END;
+    END;
 
 Code for insert into the payments:
 ALTER TRIGGER [dbo].[trg_InsertPaymentAfterMembership]
@@ -78,7 +78,7 @@ BEGIN
     FROM 
         inserted i
         INNER JOIN dbo.MembershipTypes mt ON i.MembershipTypeID = mt.MembershipTypeID;
-END;
+        END;
 
 
 
