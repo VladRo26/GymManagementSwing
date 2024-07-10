@@ -132,6 +132,16 @@ Here, on the payments page, I have implemented a search after multiple filters. 
 An example of search:
 <img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/c377b79d-0b24-4651-8a9d-54b5351a1520">
 
+### Visits:
+
+Then, on the visits page I also have a search functionality.
+
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/cb53b696-dff9-4bec-8447-5174e91a06a6"?
+
+
+
+
+
 
 
 
