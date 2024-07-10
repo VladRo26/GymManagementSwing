@@ -136,7 +136,65 @@ An example of search:
 
 Then, on the visits page I also have a search functionality.
 
-<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/cb53b696-dff9-4bec-8447-5174e91a06a6"?
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/cb53b696-dff9-4bec-8447-5174e91a06a6">
+
+### Scanner: 
+
+I added, a scanner page, using a stored procedure, here I insert the card id and then the procedure automaticly inserts the visit entry date and time and also the visit end date time, when the same card it's scanned again in the same day.
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/97ad6f9e-f204-45ed-9ce3-d6a156370abc">
+
+The code for the procedure:
+
+    
+    ALTER PROCEDURE [dbo].[sp_ScanCard]
+        @CardID NVARCHAR(20)
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+
+    DECLARE @MemberID INT;
+    DECLARE @CurrentDateTime DATETIME = GETDATE();
+    DECLARE @VisitID INT;
+
+    -- Get the MemberID based on the CardID
+    SELECT @MemberID = MemberID FROM Members WHERE CardID = @CardID;
+
+    IF @MemberID IS NULL
+    BEGIN
+        RAISERROR('Invalid CardID', 16, 1);
+        RETURN;
+    END
+
+    -- Check if there is an existing visit for the member today with a NULL EndVisitDate
+    SELECT @VisitID = VisitID 
+    FROM Visits 
+    WHERE MemberID = @MemberID 
+      AND CAST(StartVisitDate AS DATE) = CAST(@CurrentDateTime AS DATE)
+      AND EndVisitDate IS NULL;
+
+    IF @VisitID IS NOT NULL
+    BEGIN
+        -- Update the EndVisitDate for the existing visit
+        UPDATE Visits
+        SET EndVisitDate = @CurrentDateTime
+        WHERE VisitID = @VisitID;
+    END
+    ELSE
+    BEGIN
+        -- Insert a new visit record with the StartVisitDate
+        INSERT INTO Visits (MemberID, StartVisitDate)
+        VALUES (@MemberID, @CurrentDateTime);
+    END
+    END
+
+
+I scanned the card with the id: CARD-12
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/634821e9-3053-4730-b28d-c42f3bb7d0f1">
+Then I will scan it again and the insert will be made in the Visits table:
+Here is the inserted row:
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/a4d2736f-1d7d-407a-ad5e-8157ce76724f">
+
+
 
 
 
