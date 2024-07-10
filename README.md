@@ -104,6 +104,7 @@ If you select a trainer and then press on the see members, you will see all the 
 The red ones are members with no active subscriptions and the green ones have avalabile training program with the trainer.
 <img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/ac2546f7-5a99-45e9-a4a9-72c885d78c7c">
 
+Additionally, I also have a trigger that insert into payments when a member is added to the personal trainer list.
 
     ALTER TRIGGER [dbo].[trg_InsertPaymentForTraining]
     ON [dbo].[MemberTrainers]
@@ -124,6 +125,14 @@ The red ones are members with no active subscriptions and the green ones have av
         inserted i
         JOIN dbo.Trainers t ON i.TrainerID = t.TrainerID;
     END;
+
+### Payments:
+Here, on the payments page, I have implemented a search after multiple filters. Filters can be null.
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/091893a8-3891-4f85-bba8-2c7ef0937157">
+An example of search:
+<img src="https://github.com/VladRo26/GymManagementSwing/assets/100710098/c377b79d-0b24-4651-8a9d-54b5351a1520">
+
+
 
 
 
